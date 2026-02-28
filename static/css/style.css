@@ -89,6 +89,45 @@ html, body {
   color: #1d9bf0 !important;
 }
 
+/* ── Header CA badge ──────────────────────────────────────────────────────── */
+.header-ca {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 30px;
+  padding: 0 8px;
+  background: var(--bg2);
+  border: 1px solid var(--bg3);
+  border-radius: var(--r);
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+}
+.header-ca:hover {
+  background: var(--bg3);
+  border-color: var(--orange);
+}
+.header-ca.copied {
+  border-color: var(--green);
+  background: rgba(63,185,80,.1);
+}
+.ca-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--orange);
+  background: rgba(210,153,34,.15);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.ca-addr {
+  font-size: 11px;
+  color: var(--text2);
+  font-family: var(--mono);
+}
+.header-ca.copied .ca-addr { color: var(--green); }
+
 .logo-badge {
   background: var(--red);
   color: #fff;
@@ -1240,6 +1279,58 @@ input[type="range"]::-webkit-slider-thumb {
   border-color: #1d9bf0;
   color: #1d9bf0;
 }
+
+/* ── Landing page CA row ─────────────────────────────────────────────────── */
+.hero-ca-row {
+  margin-top: 16px;
+}
+
+.hero-ca-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg1);
+  border: 1px solid var(--bg3);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  font-family: var(--mono);
+  max-width: 100%;
+}
+.hero-ca-btn:hover {
+  background: var(--bg2);
+  border-color: var(--orange);
+}
+.hero-ca-btn.copied {
+  border-color: var(--green);
+  background: rgba(63,185,80,.08);
+}
+.ca-pill-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--orange);
+  background: rgba(210,153,34,.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.ca-pill-addr {
+  font-size: 12px;
+  color: var(--text2);
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hero-ca-btn.copied .ca-pill-addr { color: var(--green); }
+.ca-pill-icon {
+  font-size: 12px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+.hero-ca-btn:hover .ca-pill-icon { color: var(--orange); }
 
 .hero-badge {
   display: inline-flex;

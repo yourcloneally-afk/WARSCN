@@ -51,6 +51,12 @@
     Community
   </a>
 
+  <!-- Contract address -->
+  <button class="header-ca" onclick="copyCA(this)" title="Click to copy contract address">
+    <span class="ca-label">CA</span>
+    <span class="ca-addr">6xeRn5h…pump</span>
+  </button>
+
   <a href="/emergency" class="header-btn" title="Emergency Resources"><i class="bi bi-shield-plus"></i></a>
   <a href="/about" class="header-btn" title="About"><i class="bi bi-info-circle"></i></a>
 
@@ -108,6 +114,17 @@ function setLang(l) {
 function _syncHeaderCount(n) {
   const el = document.getElementById('hdr-event-ct');
   if (el) el.textContent = n;
+}
+
+function copyCA(btn) {
+  const ca = '6xeRn5hPCmEbZXccoCtLxxdqK59ir6HLknZd6Wj1pump';
+  navigator.clipboard.writeText(ca).then(() => {
+    const addr = btn.querySelector('.ca-addr');
+    const orig = addr.textContent;
+    addr.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { addr.textContent = orig; btn.classList.remove('copied'); }, 1800);
+  });
 }
 </script>
 
