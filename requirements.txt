@@ -1,0 +1,17 @@
+Flask==3.1.*
+Flask-SocketIO==5.4.*
+eventlet==0.37.*
+gunicorn==23.*
+requests==2.32.*
+feedparser==6.0.*
+tenacity==9.*
+geopy==2.4.*
+shapely==2.0.*
+textblob==0.18.*
+bleach==6.2.*
+APScheduler==3.10.*
+flask-limiter==3.8.*
+twilio==9.*
+python-dotenv==1.0.*
+responses==0.25.*
+pytest==8.*

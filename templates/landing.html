@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+{% block title %}WARSCAN — Real-Time Conflict Intelligence{% endblock %}
+
+{% block content %}
+<div class="landing">
+
+  <!-- ── Hero ──────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">
+        <span class="live-dot"></span>
+        LIVE DATA · {{ threat_level }} THREAT LEVEL
+      </div>
+      <h1 class="hero-title">Real-Time Conflict<br>Intelligence</h1>
+      <p class="hero-sub">
+        WARSCAN monitors the Iran–Israel–US conflict in real time — aggregating
+        news from 15+ sources, mapping events, and providing evacuation routing
+        for people on the ground.
+      </p>
+      <div class="hero-cta">
+        <a href="/dashboard" class="btn btn-red hero-btn">
+          <i class="bi bi-map-fill"></i> Open Live Dashboard
+        </a>
+        <a href="#how" class="btn btn-ghost hero-btn">
+          <i class="bi bi-info-circle"></i> How it works
+        </a>
+      </div>
+
+      <!-- live stat pills -->
+      <div class="hero-stats">
+        <div class="hstat" id="lstat-events">
+          <div class="hstat-val" id="lstat-ev-val">—</div>
+          <div class="hstat-lbl">Events today</div>
+        </div>
+        <div class="hstat-div"></div>
+        <div class="hstat">
+          <div class="hstat-val">30+</div>
+          <div class="hstat-lbl">News sources</div>
+        </div>
+        <div class="hstat-div"></div>
+        <div class="hstat">
+          <div class="hstat-val">2 min</div>
+          <div class="hstat-lbl">Update interval</div>
+        </div>
+        <div class="hstat-div"></div>
+        <div class="hstat">
+          <div class="hstat-val threat-val {{ threat_level|lower }}">{{ threat_level }}</div>
+          <div class="hstat-lbl">Threat level</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- background map hint image -->
+    <div class="hero-map-bg" aria-hidden="true">
+      <div class="hero-map-grid"></div>
+      <!-- animated conflict dots -->
+      <div class="map-dot" style="top:42%;left:54%"></div>
+      <div class="map-dot" style="top:46%;left:55%"></div>
+      <div class="map-dot red" style="top:44%;left:56%;animation-delay:.4s"></div>
+      <div class="map-dot red" style="top:48%;left:52%;animation-delay:.8s"></div>
+      <div class="map-dot orange" style="top:36%;left:51%;animation-delay:.2s"></div>
+      <div class="map-dot orange" style="top:50%;left:58%;animation-delay:1.1s"></div>
+    </div>
+  </section>
+
+  <!-- ── How it works ──────────────────────────────────── -->
+  <section class="section" id="how">
+    <div class="section-inner">
+      <div class="sec-label">HOW IT WORKS</div>
+      <h2 class="sec-title">Designed for people in conflict zones</h2>
+      <p class="sec-sub">Not for pundits. For civilians, aid workers, journalists, and families who need fast, accurate information to stay safe.</p>
+
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-ico red"><i class="bi bi-broadcast"></i></div>
+          <h3 class="feat-title">Live Intelligence Feed</h3>
+          <p class="feat-desc">
+            Headlines from BBC, Al Jazeera, Reuters, Jerusalem Post, Times of Israel,
+            Iran International, ISW, Bellingcat, Telegram OSINT channels and 15+ more — filtered to only Iran/Israel/conflict
+            content and refreshed every 2 minutes.
+          </p>
+          <ul class="feat-list">
+            <li><i class="bi bi-check2"></i> Relevance-filtered — no noise</li>
+            <li><i class="bi bi-check2"></i> Confirmed / Developing / Rumored labels</li>
+            <li><i class="bi bi-check2"></i> Sorted by recency</li>
+          </ul>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-ico blue"><i class="bi bi-geo-alt-fill"></i></div>
+          <h3 class="feat-title">Interactive Conflict Map</h3>
+          <p class="feat-desc">
+            Every event is geocoded and plotted on a live Leaflet map. Circle size
+            and colour indicate severity. Toggle a heatmap overlay or safe-zone
+            markers (hospitals, embassies, shelters).
+          </p>
+          <ul class="feat-list">
+            <li><i class="bi bi-check2"></i> Red = critical, yellow = developing, blue = low</li>
+            <li><i class="bi bi-check2"></i> Click any dot for details</li>
+            <li><i class="bi bi-check2"></i> Heatmap &amp; safe-zone overlays</li>
+          </ul>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-ico orange"><i class="bi bi-signpost-split-fill"></i></div>
+          <h3 class="feat-title">Evacuation Routing</h3>
+          <p class="feat-desc">
+            Enter your destination and WARSCAN calculates a route, shows distance
+            and estimated travel time, and draws it on the map. Routes avoid
+            high-severity danger zones where possible.
+          </p>
+          <ul class="feat-list">
+            <li><i class="bi bi-check2"></i> Works with or without routing API</li>
+            <li><i class="bi bi-check2"></i> Turn-by-turn step list</li>
+            <li><i class="bi bi-check2"></i> Download as PDF</li>
+          </ul>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-ico green"><i class="bi bi-bell-fill"></i></div>
+          <h3 class="feat-title">Proximity Alerts</h3>
+          <p class="feat-desc">
+            Set your location and alert radius. WARSCAN will show you events
+            within that range. Optionally provide email or phone for
+            out-of-browser notifications.
+          </p>
+          <ul class="feat-list">
+            <li><i class="bi bi-check2"></i> Configurable radius (10–500 km)</li>
+            <li><i class="bi bi-check2"></i> Optional email / SMS</li>
+            <li><i class="bi bi-check2"></i> No account required</li>
+          </ul>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-ico purple"><i class="bi bi-heart-pulse-fill"></i></div>
+          <h3 class="feat-title">I'm Safe Reports</h3>
+          <p class="feat-desc">
+            Generate a shareable link that lets family and friends know you're
+            safe. No login required. The link expires automatically after 24 hours
+            for privacy.
+          </p>
+          <ul class="feat-list">
+            <li><i class="bi bi-check2"></i> One tap from the green button on map</li>
+            <li><i class="bi bi-check2"></i> Anonymous, token-based</li>
+            <li><i class="bi bi-check2"></i> Auto-expires after 24h</li>
+          </ul>
+        </div>
+
+        <div class="feat-card">
+          <div class="feat-ico teal"><i class="bi bi-shield-plus-fill"></i></div>
+          <h3 class="feat-title">Emergency Resources</h3>
+          <p class="feat-desc">
+            Emergency numbers for Iran, Israel, and internationally. Embassy
+            contacts. First aid reference. Go-bag checklist. Available offline
+            once loaded.
+          </p>
+          <ul class="feat-list">
+            <li><i class="bi bi-check2"></i> Iran, Israel, US numbers</li>
+            <li><i class="bi bi-check2"></i> UNHCR, ICRC, MSF contacts</li>
+            <li><i class="bi bi-check2"></i> Go-bag &amp; first aid guide</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sources ────────────────────────────────────────── -->
+  <section class="section alt">
+    <div class="section-inner">
+      <div class="sec-label">DATA SOURCES</div>
+      <h2 class="sec-title">Where the data comes from</h2>
+      <p class="sec-sub">15+ news outlets and APIs, checked every 2 minutes. Only Iran/Israel/conflict-relevant articles pass our filter.</p>
+
+      <div class="sources-grid">
+        {% set sources = [
+          ("BBC Middle East",     "Tier-1 broadcast",        "bi-broadcast"),
+          ("Al Jazeera",          "World coverage",          "bi-globe2"),
+          ("Reuters World",       "Wire service",            "bi-newspaper"),
+          ("Jerusalem Post",      "Israel",                  "bi-flag"),
+          ("Times of Israel",     "Israel",                  "bi-flag"),
+          ("Israel Hayom",        "Israel",                  "bi-flag"),
+          ("Haaretz",             "Israel — analysis",       "bi-flag"),
+          ("Iran International",  "Iran",                    "bi-flag"),
+          ("Middle East Eye",     "Regional OSINT",          "bi-eye"),
+          ("France24",            "Middle East bureau",      "bi-broadcast"),
+          ("i24 News",            "Israel broadcast",        "bi-broadcast"),
+          ("Radio Free Europe",   "Iran/Region",             "bi-radio"),
+          ("The National (UAE)",  "Gulf region",             "bi-globe2"),
+          ("DW Middle East",      "Deutsche Welle",          "bi-broadcast"),
+          ("Axios World",         "US policy",               "bi-newspaper"),
+          ("ISW",                 "Conflict analysis",       "bi-binoculars"),
+          ("Bellingcat",          "Open-source intel",       "bi-search"),
+          ("Breaking Defense",    "Military affairs",        "bi-shield"),
+          ("Netblocks",           "Internet/cyber",          "bi-wifi"),
+          ("@InfinityHedge",      "Telegram — OSINT",        "bi-telegram"),
+          ("@IntelSlava",         "Telegram — conflict",     "bi-telegram"),
+          ("@OSINTdefender",      "Telegram — intel",        "bi-telegram"),
+          ("Google News",         "14 targeted queries",     "bi-search"),
+          ("Pikud HaOref",        "Israel alert system",     "bi-exclamation-triangle"),
+        ] %}
+        {% for name, desc, ico in sources %}
+        <div class="src-chip">
+          <i class="bi {{ ico }}"></i>
+          <div>
+            <div class="src-name">{{ name }}</div>
+            <div class="src-desc">{{ desc }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How to use ─────────────────────────────────────── -->
+  <section class="section" id="guide">
+    <div class="section-inner">
+      <div class="sec-label">QUICK GUIDE</div>
+      <h2 class="sec-title">How to use the dashboard</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3 class="step-title">Read the Feed</h3>
+            <p class="step-desc">The right panel shows the live event feed. Use the filter chips (Conflict / Strike / Confirmed / Developing) to narrow down. Click any card to jump to that location on the map.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3 class="step-title">Explore the Map</h3>
+            <p class="step-desc">Each coloured circle is an event. <span class="step-tag red">Red</span> = critical severity, <span class="step-tag orange">Yellow</span> = developing, <span class="step-tag blue">Blue</span> = lower severity. Click a dot for a headline popup. Toggle the heatmap or safe-zone overlays with the buttons on the lower left.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3 class="step-title">Plan an Evacuation Route</h3>
+            <p class="step-desc">Switch to the <strong>Evacuate</strong> tab. Click <em>Detect My Location</em>, then type a destination city and press Calculate. A route appears on the map with distance, estimated time, and step-by-step directions. Download as PDF to use offline.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3 class="step-title">Set Up Alerts</h3>
+            <p class="step-desc">In the <strong>Resources</strong> tab, set your alert radius and optionally add email or phone. Once your location is detected, you will see all events within that radius in the <i class="bi bi-bell"></i> bell panel (top right).</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h3 class="step-title">Share "I'm Safe"</h3>
+            <p class="step-desc">Tap the green <i class="bi bi-heart-pulse"></i> button (bottom right of the map). Fill in your name and a brief message. Share the generated link with family or friends — it works for 24 hours.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Disclaimer ─────────────────────────────────────── -->
+  <section class="section alt">
+    <div class="section-inner narrow">
+      <div class="disclaimer">
+        <i class="bi bi-exclamation-triangle disclaimer-ico"></i>
+        <div>
+          <strong>Important disclaimer</strong><br>
+          WARSCAN aggregates public news sources and open data. Information may be delayed,
+          incomplete, or inaccurate. This tool supplements but does not replace official
+          government guidance, military advisories, or emergency services. Always follow
+          instructions from local authorities.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Final CTA ──────────────────────────────────────── -->
+  <section class="section cta-section">
+    <div class="section-inner narrow center">
+      <h2 class="cta-title">Stay informed. Stay safe.</h2>
+      <p class="cta-sub">The dashboard updates every 2 minutes with the latest conflict intelligence.</p>
+      <a href="/dashboard" class="btn btn-red hero-btn" style="font-size:15px;height:48px;padding:0 28px">
+        <i class="bi bi-map-fill"></i> Open Live Dashboard
+      </a>
+      <div class="cta-links">
+        <a href="/emergency" class="page-link">Emergency Resources</a>
+        <span style="color:var(--text3)">·</span>
+        <a href="/about" class="page-link">About WARSCAN</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load live event count
+fetch('/api/events?limit=1&hours=24')
+  .then(r => r.json())
+  .then(d => {
+    const el = document.getElementById('lstat-ev-val');
+    if (el) el.textContent = d.count;
+  })
+  .catch(() => {});
+</script>
+{% endblock %}

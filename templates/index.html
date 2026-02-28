@@ -1,0 +1,1051 @@
+{% extends "base.html" %}
+{% block title %}WARSCAN — Live Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ══ Onboarding overlay (first visit) ═══════════════ -->
+<div class="onboard-overlay" id="onboard" style="display:none">
+  <div class="onboard-wrap">
+    <div class="onboard-header">
+      <div class="onboard-ico"><i class="bi bi-shield-check"></i></div>
+      <div>
+        <div class="onboard-title">Welcome to WARSCAN</div>
+        <div class="onboard-version">Real-Time Conflict Intelligence Dashboard</div>
+      </div>
+    </div>
+    <div class="onboard-steps">
+      <div class="ob-step">
+        <div class="ob-num">1</div>
+        <div>
+          <div class="ob-title">Read the Live Feed</div>
+          <div class="ob-desc">The right panel shows real-time conflict events from 15+ sources. Filter by type using the chips at the top. Click any card to jump to that location on the map.</div>
+          <div class="ob-tags">
+            <span class="ob-tag red">Confirmed</span>
+            <span class="ob-tag orange">Developing</span>
+            <span class="ob-tag">Rumored</span>
+          </div>
+        </div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-num">2</div>
+        <div>
+          <div class="ob-title">Explore the Map</div>
+          <div class="ob-desc">Each dot is a geolocated event. Size and colour indicate severity. Click any dot for a popup. Use the buttons bottom-left to toggle heatmap, safe zones, or locate yourself.</div>
+          <div class="ob-tags">
+            <span class="ob-tag red">🔴 Critical</span>
+            <span class="ob-tag orange">🟡 Developing</span>
+            <span class="ob-tag blue">🔵 Low</span>
+          </div>
+        </div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-num">3</div>
+        <div>
+          <div class="ob-title">Plan an Evacuation Route</div>
+          <div class="ob-desc">Switch to the <strong>Evacuate</strong> tab → detect your location → type a destination city → calculate route. Steps appear on screen and can be saved as a PDF.</div>
+        </div>
+      </div>
+      <div class="ob-step">
+        <div class="ob-num">4</div>
+        <div>
+          <div class="ob-title">Tell family you're safe</div>
+          <div class="ob-desc">Tap the <span style="color:var(--green)">green heart button</span> on the map to generate a shareable "I'm Safe" link. No account needed — expires in 24 hours.</div>
+        </div>
+      </div>
+    </div>
+    <div class="onboard-footer">
+      <label class="ob-check">
+        <input type="checkbox" id="ob-dont-show"> Don't show again
+      </label>
+      <button class="btn btn-blue" onclick="closeOnboard()">
+        <i class="bi bi-arrow-right"></i> Open Dashboard
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="app-layout">
+
+  <!-- ══ Map column ══════════════════════════════════ -->
+  <div class="map-col">
+    <div id="map"></div>
+
+    <!-- floating map info -->
+    <div class="map-info">
+      <div class="map-badge"><strong id="map-event-count">—</strong> events on map</div>
+      <div class="map-badge" id="map-updated">Loading…</div>
+    </div>
+
+    <!-- map layer buttons with tooltips -->
+    <div class="map-controls">
+      <button class="map-ctrl-btn" id="btn-heatmap" onclick="toggleHeatmap()" data-tip="Toggle intensity heatmap">
+        <i class="bi bi-fire"></i>
+      </button>
+      <button class="map-ctrl-btn" id="btn-safe" onclick="toggleSafeZones()" data-tip="Show safe zones (hospitals, embassies)">
+        <i class="bi bi-hospital"></i>
+      </button>
+      <button class="map-ctrl-btn" id="btn-locate" onclick="locateMe()" data-tip="Detect my location">
+        <i class="bi bi-crosshair"></i>
+      </button>
+      <button class="map-ctrl-btn" onclick="showOnboard()" data-tip="How to use this dashboard">
+        <i class="bi bi-question-circle"></i>
+      </button>
+    </div>
+
+    <!-- map legend -->
+    <div class="map-legend">
+      <div class="legend-title">Event Severity</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#f85149"></div> Critical (&gt;75%)</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#d29922"></div> High (50–75%)</div>
+      <div class="legend-row"><div class="legend-dot" style="background:#58a6ff"></div> Low (&lt;50%)</div>
+      <div class="legend-row" style="margin-top:6px;padding-top:6px;border-top:var(--border)">
+        <div class="legend-dot" style="background:#3fb950;border-color:#3fb950"></div> Safe zone
+      </div>
+      <div class="legend-row">
+        <div class="legend-dot" style="background:none;border:2px solid #3fb950"></div> Your location
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Sidebar ═════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('feed', this)" data-tip="Live conflict news feed">
+        <i class="bi bi-newspaper"></i> Feed
+      </button>
+      <button class="tab-btn" onclick="switchTab('route', this)" data-tip="Calculate an evacuation route">
+        <i class="bi bi-map"></i> Evacuate
+      </button>
+      <button class="tab-btn" onclick="switchTab('help', this)" data-tip="Emergency numbers and resources">
+        <i class="bi bi-shield-plus"></i> Resources
+      </button>
+    </div>
+
+    <!-- ── Feed pane ─────────────────────────────── -->
+    <div class="pane active" id="pane-feed">
+      <div class="feed-filters">
+        <button class="fchip active" data-f="all"          onclick="filterFeed(this)">All</button>
+        <button class="fchip" data-f="conflict"            onclick="filterFeed(this)">⚔️ Conflict</button>
+        <button class="fchip" data-f="strike"              onclick="filterFeed(this)">💥 Strike</button>
+        <button class="fchip" data-f="missile"             onclick="filterFeed(this)">🚀 Missile</button>
+        <button class="fchip" data-f="nuclear"             onclick="filterFeed(this)">☢️ Nuclear</button>
+        <button class="fchip" data-f="casualties"          onclick="filterFeed(this)">🩸 Casualties</button>
+        <button class="fchip" data-f="category:confirmed"  onclick="filterFeed(this)">✓ Confirmed</button>
+        <button class="fchip" data-f="category:developing" onclick="filterFeed(this)">⟳ Developing</button>
+      </div>
+      <div class="feed-list" id="feed-list">
+        <div class="empty-state">
+          <i class="bi bi-arrow-clockwise"></i>
+          <p>Loading events…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Evacuate pane ─────────────────────────── -->
+    <div class="pane" id="pane-route">
+      <div class="pane-scroll">
+
+        <!-- location status -->
+        <div class="pane-section">
+          <div class="pane-label">Your Location</div>
+          <div class="loc-row" id="loc-status">
+            <i class="bi bi-geo-alt"></i>
+            <span id="loc-text">Click "Locate Me" to set your position</span>
+          </div>
+          <button class="btn btn-ghost btn-block" onclick="locateMe()">
+            <i class="bi bi-crosshair"></i> Detect My Location
+          </button>
+        </div>
+
+        <!-- destination -->
+        <div class="pane-section">
+          <div class="pane-label">Destination</div>
+          <div class="field">
+            <label>City or Address</label>
+            <div class="field-row">
+              <input type="text" id="dest-input" class="inp" placeholder="e.g. Amman, Jordan" />
+              <button class="btn btn-blue btn-icon" onclick="geocodeAndRoute()" title="Calculate route">
+                <i class="bi bi-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Or click on the map to set destination</label>
+          </div>
+          <button class="btn btn-blue btn-block" id="btn-route" onclick="geocodeAndRoute()">
+            <i class="bi bi-signpost-split"></i> Calculate Safe Route
+          </button>
+        </div>
+
+        <!-- route result -->
+        <div id="route-result" class="d-none">
+          <div class="pane-label">Route</div>
+          <div class="route-box">
+            <div class="route-nums">
+              <div>
+                <div class="rn-val" id="r-dist">—</div>
+                <div class="rn-unit">km</div>
+              </div>
+              <div>
+                <div class="rn-val" id="r-time">—</div>
+                <div class="rn-unit">min</div>
+              </div>
+            </div>
+            <div class="route-warn d-none" id="r-warn">
+              <i class="bi bi-exclamation-triangle"></i>
+              <span id="r-warn-text"></span>
+            </div>
+            <div class="steps-list" id="r-steps"></div>
+          </div>
+          <button class="btn btn-ghost btn-block mt-8" onclick="exportPDF()">
+            <i class="bi bi-filetype-pdf"></i> Export Evacuation Plan
+          </button>
+        </div>
+
+        <!-- nearby safe zones -->
+        <div class="pane-section mt-16">
+          <div class="pane-label">Nearby Safe Zones</div>
+          <div id="safe-zones-list">
+            <div class="empty-state">
+              <i class="bi bi-geo"></i>
+              <p>Set location to see nearby shelters, hospitals &amp; embassies</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Resources pane ────────────────────────── -->
+    <div class="pane" id="pane-help">
+      <div class="pane-scroll">
+
+        <!-- alert subscription -->
+        <div class="pane-section">
+          <div class="pane-label">Proximity Alerts</div>
+          <div class="card">
+            <div class="field">
+              <label>Alert Radius</label>
+              <input type="range" id="radius-range" min="10" max="500" value="100"
+                     oninput="document.getElementById('radius-val').textContent = this.value">
+              <div class="radius-disp"><span id="radius-val">100</span> km</div>
+            </div>
+            <div class="field">
+              <label>Email (optional)</label>
+              <input type="email" id="sub-email" class="inp" placeholder="you@example.com">
+            </div>
+            <div class="field">
+              <label>Phone (optional, +intl format)</label>
+              <input type="tel" id="sub-phone" class="inp" placeholder="+1 555 0100">
+            </div>
+            <button class="btn btn-blue btn-block" onclick="subscribeAlerts()">
+              <i class="bi bi-bell"></i> Subscribe to Alerts
+            </button>
+          </div>
+        </div>
+
+        <!-- emergency resources accordion -->
+        <div class="pane-label">Emergency Resources</div>
+
+        <div class="res-block" id="rb-iran">
+          <button class="res-header" onclick="toggleRes('rb-iran')">
+            <div class="res-ico"><i class="bi bi-flag"></i></div>
+            Iran
+            <i class="bi bi-chevron-down res-chevron"></i>
+          </button>
+          <div class="res-body">
+            <table>
+              <tr><td><strong>Emergency</strong></td><td>115</td></tr>
+              <tr><td><strong>Police</strong></td><td>110</td></tr>
+              <tr><td><strong>Fire</strong></td><td>125</td></tr>
+              <tr><td><strong>UNHCR Iran</strong></td><td>+98 21 7030 8000</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="res-block" id="rb-israel">
+          <button class="res-header" onclick="toggleRes('rb-israel')">
+            <div class="res-ico"><i class="bi bi-flag"></i></div>
+            Israel
+            <i class="bi bi-chevron-down res-chevron"></i>
+          </button>
+          <div class="res-body">
+            <table>
+              <tr><td><strong>Emergency</strong></td><td>100/101/102</td></tr>
+              <tr><td><strong>Home Front</strong></td><td>104</td></tr>
+              <tr><td><strong>Pikud HaOref</strong></td><td><a href="https://www.oref.org.il" target="_blank" class="page-link">oref.org.il</a></td></tr>
+              <tr><td><strong>US Embassy</strong></td><td>+972 2-630-4000</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="res-block" id="rb-intl">
+          <button class="res-header" onclick="toggleRes('rb-intl')">
+            <div class="res-ico"><i class="bi bi-globe2"></i></div>
+            International
+            <i class="bi bi-chevron-down res-chevron"></i>
+          </button>
+          <div class="res-body">
+            <ul>
+              <li>UNHCR Emergency: +1 800 23 00 8600</li>
+              <li>ICRC: +41 22 734 6001</li>
+              <li>MSF: <a href="https://www.msf.org" target="_blank" class="page-link">msf.org</a></li>
+              <li>US STEP Enrollment: <a href="https://step.state.gov" target="_blank" class="page-link">step.state.gov</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="res-block" id="rb-evac">
+          <button class="res-header" onclick="toggleRes('rb-evac')">
+            <div class="res-ico"><i class="bi bi-life-preserver"></i></div>
+            Evacuation Guidance
+            <i class="bi bi-chevron-down res-chevron"></i>
+          </button>
+          <div class="res-body">
+            <ul>
+              <li>Stay alert and charge your devices</li>
+              <li>Keep a bag packed: documents, cash, 3 days of water + food</li>
+              <li>Know your closest border crossing</li>
+              <li>Check travel advisories daily</li>
+              <li>Register with your embassy</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </aside>
+</div>
+
+<!-- I'm Safe FAB -->
+<button class="fab" onclick="openSafeModal()" title="I'm Safe">
+  <i class="bi bi-heart-pulse"></i>
+</button>
+
+<!-- I'm Safe Modal -->
+<div class="modal fade" id="safe-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-heart-pulse text-success me-2"></i> I'm Safe</h5>
+        <button type="button" class="x-btn" data-bs-dismiss="modal"><i class="bi bi-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label>Your Name</label>
+          <input type="text" id="safe-name" class="inp" placeholder="Optional" maxlength="50">
+        </div>
+        <div class="field">
+          <label>Message</label>
+          <input type="text" id="safe-msg" class="inp" placeholder="I'm safe in..." maxlength="200">
+        </div>
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="safe-city" class="inp" placeholder="Your current city" maxlength="100">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-green" onclick="submitSafe()">
+          <i class="bi bi-share"></i> Generate Link
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Safe link result modal -->
+<div class="modal fade" id="safe-link-modal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-check-circle text-success me-2"></i> Share This Link</h5>
+        <button type="button" class="x-btn" data-bs-dismiss="modal"><i class="bi bi-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">
+          Share this link with family and friends:
+        </p>
+        <div class="field-row">
+          <input type="text" id="safe-url" class="inp" readonly>
+          <button class="btn btn-blue btn-icon" onclick="copyLink()" title="Copy">
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alerts offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="alertsOC">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-bell me-2" style="color:var(--orange)"></i> Recent Alerts</h5>
+    <button type="button" class="x-btn" data-bs-dismiss="offcanvas"><i class="bi bi-x"></i></button>
+  </div>
+  <div class="offcanvas-body" id="alerts-body">
+    <div class="empty-state">
+      <i class="bi bi-bell-slash"></i>
+      <p>No alerts yet</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script>
+// ─── State ──────────────────────────────────────────────────────────────────
+const state = {
+  userLoc: null,
+  destLoc: null,
+  events: [],
+  filter: 'all',
+  heatmapVisible: false,
+  safeZonesVisible: false,
+  routeLayer: null,
+  mapFitted: false,
+};
+
+// ─── Map setup ──────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [29, 50],   // centred on Gulf/Iran region
+  zoom: 5,
+  zoomControl: false,
+  preferCanvas: true,
+});
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+// Dark tile — CartoDB dark_all
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  subdomains: 'abcd',
+  maxZoom: 19,
+  attribution: '© CartoDB',
+}).addTo(map);
+
+const eventLayer = L.layerGroup().addTo(map);
+let heatLayer = null;
+const safeLayer = L.layerGroup();
+let userMarker = null;
+let destMarker = null;
+
+// Click on map = set destination
+map.on('click', e => {
+  setDest(e.latlng.lat, e.latlng.lng, `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`);
+});
+
+// ─── Event type → icon emoji ────────────────────────────────────────────────
+const TYPE_ICON = {
+  strike:      '💥',
+  missile:     '🚀',
+  drone:       '🛸',
+  nuclear:     '☢️',
+  casualties:  '🩸',
+  military:    '⚔️',
+  conflict:    '⚔️',
+  diplomatic:  '🤝',
+  protest:     '📢',
+  humanitarian:'🏥',
+  economic:    '📊',
+  unknown:     '📍',
+};
+
+// ─── Severity → colour ──────────────────────────────────────────────────────
+function sevColor(sev) {
+  if (sev >= 0.75) return '#f85149';
+  if (sev >= 0.5)  return '#d29922';
+  if (sev >= 0.25) return '#58a6ff';
+  return '#484f58';
+}
+
+// ─── Create a div icon with emoji label ─────────────────────────────────────
+function makeEventIcon(ev) {
+  const sev = ev.severity || 0;
+  const emoji = TYPE_ICON[ev.event_type] || '📍';
+  const color = sevColor(sev);
+  const size = Math.round(18 + sev * 16);
+  const isPulse = sev >= 0.7;
+  const ageMs = ev.timestamp ? Date.now() - new Date(ev.timestamp).getTime() : Infinity;
+  const isRecent = ageMs < 3 * 3600 * 1000; // within 3 hrs
+
+  return L.divIcon({
+    className: '',
+    html: `<div class="map-event-dot${isPulse ? ' pulse' : ''}${isRecent ? ' recent' : ''}" style="
+      width:${size}px;height:${size}px;
+      background:${color}33;
+      border:2px solid ${color};
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:${Math.round(size * 0.55)}px;
+      cursor:pointer;
+      box-shadow:0 0 ${isPulse ? 12 : 5}px ${color}88;
+    ">${emoji}</div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+}
+
+// ─── Load events ────────────────────────────────────────────────────────────
+async function loadEvents(filter) {
+  try {
+    const params = new URLSearchParams({ limit: 300, hours: 48 });
+    if (filter && filter !== 'all') {
+      if (filter.startsWith('category:')) {
+        params.set('category', filter.split(':')[1]);
+      } else {
+        params.set('event_type', filter);
+      }
+    }
+    const r = await fetch('/api/events?' + params);
+    const data = await r.json();
+    state.events = data.events || [];
+    renderFeed(state.events);
+    renderMap(state.events);
+    const cnt = state.events.length;
+    document.getElementById('map-event-count').textContent = cnt;
+    if (typeof _syncHeaderCount === 'function') _syncHeaderCount(cnt);
+    document.getElementById('map-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+// ─── Render event markers on map ─────────────────────────────────────────────
+function renderMap(events) {
+  eventLayer.clearLayers();
+  const heatData = [];
+  const bounds = [];
+
+  events.forEach(ev => {
+    if (!ev.lat || !ev.lon) return;
+
+    const marker = L.marker([ev.lat, ev.lon], { icon: makeEventIcon(ev) });
+
+    const ts = ev.timestamp ? timeAgo(ev.timestamp) : '';
+    const catColor = ev.category === 'confirmed' ? '#f85149' : ev.category === 'developing' ? '#d29922' : '#8b949e';
+    const srcArr = (() => { try { return Array.isArray(ev.sources) ? ev.sources : JSON.parse(ev.sources||'[]'); } catch { return []; } })();
+    const srcName = srcArr.length ? srcArr[0] : 'Unknown';
+    const srcUrl  = ev.source_url || '';
+    const emoji   = TYPE_ICON[ev.event_type] || '📍';
+    const typeLabel = ev.event_type && ev.event_type !== 'unknown'
+      ? `<span style="font-size:9px;background:#21262d;color:#8b949e;padding:1px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.3px">${emoji} ${ev.event_type}</span>` : '';
+    const srcHtml = srcUrl
+      ? `<a href="${escHtml(srcUrl)}" target="_blank" rel="noopener" style="color:#58a6ff;font-size:11px;text-decoration:none;display:flex;align-items:center;gap:3px"><i class="bi bi-box-arrow-up-right" style="font-size:10px"></i>${escHtml(srcName)}</a>`
+      : `<span style="color:#8b949e;font-size:11px">${escHtml(srcName)}</span>`;
+    const sevPct  = Math.round((ev.severity||0)*100);
+    const sevBar  = `<div style="height:3px;background:${sevColor(ev.severity||0)};border-radius:2px;width:${sevPct}%;margin-top:6px"></div>`;
+
+    const allSources = srcArr.length > 1
+      ? `<div style="font-size:10px;color:#484f58;margin-top:3px">Also: ${srcArr.slice(1,4).map(s=>escHtml(s)).join(', ')}</div>` : '';
+
+    marker.bindPopup(`
+      <div class="map-popup">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px;flex-wrap:wrap">
+          <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 6px;border-radius:3px;background:${catColor}22;color:${catColor}">${ev.category}</span>
+          ${typeLabel}
+          <span style="font-size:10px;color:#484f58;margin-left:auto">${ts}</span>
+        </div>
+        <b style="font-size:13px;line-height:1.4;display:block;margin-bottom:6px;color:#e6edf3">${escHtml(ev.title)}</b>
+        ${ev.location_name ? `<div style="font-size:11px;color:#8b949e;margin-bottom:5px;display:flex;align-items:center;gap:4px"><span>📍</span>${escHtml(ev.location_name)}</div>` : ''}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:7px;border-top:1px solid #21262d">
+          ${srcHtml}
+          <span style="font-size:11px;color:#8b949e">Severity: <strong style="color:${sevColor(ev.severity||0)}">${sevPct}%</strong></span>
+        </div>
+        ${allSources}
+        ${sevBar}
+      </div>
+    `, { maxWidth: 300, className: 'dark-popup' });
+
+    marker.on('click', () => highlightFeedItem(ev.id));
+    eventLayer.addLayer(marker);
+    bounds.push([ev.lat, ev.lon]);
+
+    if (ev.severity >= 0.3) {
+      heatData.push([ev.lat, ev.lon, ev.severity]);
+    }
+  });
+
+  if (heatLayer) {
+    heatLayer.setLatLngs(heatData);
+  } else {
+    heatLayer = L.heatLayer(heatData, {
+      radius: 30,
+      blur: 25,
+      gradient: { 0.3: '#58a6ff', 0.6: '#d29922', 0.9: '#f85149' },
+    });
+    if (state.heatmapVisible) heatLayer.addTo(map);
+  }
+
+  // Auto-fit map to show all events (only on first load)
+  if (bounds.length > 0 && !state.mapFitted) {
+    state.mapFitted = true;
+    try {
+      map.fitBounds(bounds, { padding: [40, 40], maxZoom: 7 });
+    } catch(e) {}
+  }
+}
+
+// Tier-1 credible source names
+const TIER1_SOURCES = new Set([
+  'bbc','reuters','ap news','associated press','the guardian','new york times','financial times',
+  'washington post','al jazeera','france24','haaretz','times of israel','jerusalem post',
+  'iran international','middle east eye','the national','axios','france 24','radio free europe',
+  'isw','bellingcat','breaking defense','netblocks','i24 news','israel hayom','ynet'
+]);
+
+function srcTier(name) {
+  return TIER1_SOURCES.has((name||'').toLowerCase().replace(/[^a-z0-9 ]/g,'').trim()) ? '✓' : '';
+}
+
+// ─── Render sidebar feed ──────────────────────────────────────────────────────
+function renderFeed(events) {
+  const el = document.getElementById('feed-list');
+  if (!events.length) {
+    el.innerHTML = '<div class="empty-state"><i class="bi bi-inbox"></i><p>No events found</p></div>';
+    return;
+  }
+
+  el.innerHTML = events.slice(0, 120).map(ev => {
+    const ts = ev.timestamp ? timeAgo(ev.timestamp) : '';
+    const cat = ev.category || 'rumored';
+    const sev = Math.round((ev.severity||0)*100);
+    const sevColor = sev >= 75 ? 'var(--red)' : sev >= 50 ? 'var(--orange)' : 'var(--text3)';
+    const sourceUrl = ev.source_url || '';
+    const sources = (() => {
+      try { return Array.isArray(ev.sources) ? ev.sources : JSON.parse(ev.sources||'[]'); }
+      catch { return []; }
+    })();
+    const sourceName = sources.length ? sources[0] : 'Unknown';
+    const etBadge = ev.event_type && ev.event_type !== 'unknown'
+      ? `<span class="ev-type">${escHtml(ev.event_type)}</span>` : '';
+
+    return `
+    <div class="event-item" id="ev-${ev.id}">
+      <div class="event-row1">
+        <span class="ev-badge ${cat}">${cat}</span>
+        ${etBadge}
+        <span class="ev-time">${ts}</span>
+      </div>
+      <div class="ev-title" onclick="focusEvent(${ev.lat||'null'},${ev.lon||'null'},${ev.id})">${escHtml(ev.title)}</div>
+      <div class="ev-footer">
+        <div class="ev-source">
+          ${sourceUrl
+            ? `<a href="${escHtml(sourceUrl)}" target="_blank" rel="noopener" class="ev-src-link" onclick="event.stopPropagation()" title="Open source article">
+                 <i class="bi bi-box-arrow-up-right"></i>${srcTier(sourceName) ? '<span class="ev-verified">✓</span>' : ''}${escHtml(sourceName)}
+               </a>`
+            : `<span class="ev-src-plain"><i class="bi bi-newspaper"></i>${srcTier(sourceName) ? '<span class="ev-verified">✓</span>' : ''}${escHtml(sourceName)}</span>`
+          }
+          ${sources.length > 1 ? `<span class="ev-src-more" title="${escHtml(sources.slice(1).join(', '))}">+${sources.length-1}</span>` : ''}
+        </div>
+        <div class="ev-sev" style="color:${sevColor}">${sev}%</div>
+      </div>
+      ${ev.location_name ? `<div class="ev-loc"><i class="bi bi-geo-alt"></i>${escHtml(ev.location_name)}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function focusEvent(lat, lon, id) {
+  if (lat && lon) map.setView([lat, lon], 8);
+}
+
+function highlightFeedItem(id) {
+  document.querySelectorAll('.event-item').forEach(el => el.style.background = '');
+  const el = document.getElementById('ev-' + id);
+  if (el) {
+    el.style.background = 'var(--bg3)';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+// ─── Filter ──────────────────────────────────────────────────────────────────
+function filterFeed(btn) {
+  document.querySelectorAll('.fchip').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.filter = btn.dataset.f;
+  loadEvents(state.filter);
+}
+
+// ─── Tabs ────────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pane-' + name).classList.add('active');
+}
+
+// ─── Location ─────────────────────────────────────────────────────────────────
+function locateMe() {
+  if (!navigator.geolocation) {
+    alert('Geolocation not supported by your browser.');
+    return;
+  }
+  const btn = document.getElementById('btn-locate');
+  btn.innerHTML = '<div class="spinner"></div>';
+  navigator.geolocation.getCurrentPosition(pos => {
+    btn.innerHTML = '<i class="bi bi-crosshair"></i>';
+    setUserLoc(pos.coords.latitude, pos.coords.longitude);
+  }, err => {
+    btn.innerHTML = '<i class="bi bi-crosshair"></i>';
+    alert('Could not get location: ' + err.message);
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+function setUserLoc(lat, lon) {
+  state.userLoc = { lat, lon };
+  const row = document.getElementById('loc-status');
+  row.className = 'loc-row ok';
+  row.innerHTML = `<i class="bi bi-geo-alt-fill"></i><span>${lat.toFixed(4)}, ${lon.toFixed(4)}</span>`;
+
+  if (userMarker) map.removeLayer(userMarker);
+  userMarker = L.circleMarker([lat, lon], {
+    radius: 9,
+    fillColor: '#3fb950',
+    fillOpacity: .9,
+    color: '#fff',
+    weight: 2,
+  }).addTo(map).bindPopup('<b>Your Location</b>');
+
+  map.setView([lat, lon], 7);
+
+  // Notify server
+  fetch('/api/set_location', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lat, lon }),
+  });
+
+  loadSafeZones(lat, lon);
+  loadAlerts(lat, lon);
+}
+
+function setDest(lat, lon, label) {
+  state.destLoc = { lat, lon };
+  document.getElementById('dest-input').value = label;
+  if (destMarker) map.removeLayer(destMarker);
+  destMarker = L.marker([lat, lon], {
+    icon: L.divIcon({
+      className: '',
+      html: '<div style="width:14px;height:14px;background:#58a6ff;border:2px solid #fff;border-radius:50%"></div>',
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+    }),
+  }).addTo(map).bindPopup(`<b>Destination</b><br>${label}`);
+}
+
+// ─── Geocode + Route ──────────────────────────────────────────────────────────
+async function geocodeAndRoute() {
+  const addr = document.getElementById('dest-input').value.trim();
+  if (!addr) { alert('Enter a destination city or address.'); return; }
+  if (!state.userLoc) { alert('Detect your location first.'); return; }
+
+  const btn = document.getElementById('btn-route');
+  btn.innerHTML = '<div class="spinner"></div> Calculating…';
+  btn.disabled = true;
+
+  try {
+    // Geocode with Nominatim
+    const geoR = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`, {
+      headers: { 'Accept-Language': 'en' }
+    });
+    const geoData = await geoR.json();
+    if (!geoData.length) throw new Error('Location not found. Try a different city name.');
+
+    const destLat = parseFloat(geoData[0].lat);
+    const destLon = parseFloat(geoData[0].lon);
+    setDest(destLat, destLon, geoData[0].display_name.split(',')[0]);
+
+    // Route
+    const routeR = await fetch('/api/route', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        origin: [state.userLoc.lon, state.userLoc.lat],
+        destination: [destLon, destLat],
+      }),
+    });
+    const route = await routeR.json();
+    showRoute(route);
+  } catch(e) {
+    alert(e.message || 'Route calculation failed.');
+  } finally {
+    btn.innerHTML = '<i class="bi bi-signpost-split"></i> Calculate Safe Route';
+    btn.disabled = false;
+  }
+}
+
+function showRoute(data) {
+  document.getElementById('route-result').classList.remove('d-none');
+  document.getElementById('r-dist').textContent = data.distance_km ?? '—';
+  document.getElementById('r-time').textContent = data.duration_min ?? '—';
+
+  const warnEl = document.getElementById('r-warn');
+  if (data.warning) {
+    warnEl.classList.remove('d-none');
+    document.getElementById('r-warn-text').textContent = data.warning;
+  } else {
+    warnEl.classList.add('d-none');
+  }
+
+  const stepsEl = document.getElementById('r-steps');
+  stepsEl.innerHTML = (data.steps||[]).map((s,i) => `
+    <div class="step-row">
+      <div class="step-n">${i+1}</div>
+      <div class="step-txt">${escHtml(s.instruction)} ${s.distance_m ? `<span style="color:var(--text3)">(${(s.distance_m/1000).toFixed(1)} km)</span>` : ''}</div>
+    </div>`).join('');
+
+  if (state.routeLayer) map.removeLayer(state.routeLayer);
+  if (data.geojson && data.geojson.features?.length) {
+    state.routeLayer = L.geoJSON(data.geojson, {
+      style: { color: '#58a6ff', weight: 4, opacity: .9 },
+    }).addTo(map);
+    try { map.fitBounds(state.routeLayer.getBounds(), { padding: [40, 40] }); } catch(_) {}
+  }
+}
+
+// ─── Safe zones ───────────────────────────────────────────────────────────────
+async function loadSafeZones(lat, lon) {
+  try {
+    const r = await fetch(`/api/safe_zones?lat=${lat}&lon=${lon}&radius=50`);
+    const data = await r.json();
+    const features = data.features || [];
+
+    const listEl = document.getElementById('safe-zones-list');
+    if (!features.length) {
+      listEl.innerHTML = '<div class="empty-state"><i class="bi bi-geo"></i><p>No nearby safe zones found</p></div>';
+      return;
+    }
+
+    listEl.innerHTML = features.slice(0,15).map(f => {
+      const p = f.properties;
+      const icons = { hospital:'bi-hospital', embassy:'bi-bank', shelter:'bi-house-heart', border:'bi-arrows-collapse', other:'bi-geo' };
+      const ic = icons[p.type] || 'bi-geo';
+      return `<div class="sz-row" onclick="map.setView([${f.geometry.coordinates[1]},${f.geometry.coordinates[0]}],13)">
+        <div class="sz-ico"><i class="bi ${ic}"></i></div>
+        <div><div class="sz-name">${escHtml(p.name||'Unknown')}</div><div class="sz-type">${p.type||'other'}${p.phone?' · '+escHtml(p.phone):''}</div></div>
+      </div>`;
+    }).join('');
+
+    safeLayer.clearLayers();
+    features.forEach(f => {
+      const [lon2, lat2] = f.geometry.coordinates;
+      L.circleMarker([lat2, lon2], {
+        radius: 7,
+        fillColor: '#3fb950',
+        fillOpacity: .7,
+        color: '#fff',
+        weight: 1.5,
+      }).bindPopup(`<b>${escHtml(f.properties.name||'Safe Zone')}</b><br>${f.properties.type}`)
+        .addTo(safeLayer);
+    });
+    if (state.safeZonesVisible) safeLayer.addTo(map);
+  } catch(e) { console.error(e); }
+}
+
+function toggleSafeZones() {
+  state.safeZonesVisible = !state.safeZonesVisible;
+  const btn = document.getElementById('btn-safe');
+  if (state.safeZonesVisible) {
+    safeLayer.addTo(map);
+    btn.style.color = 'var(--green)';
+  } else {
+    map.removeLayer(safeLayer);
+    btn.style.color = '';
+  }
+}
+
+function toggleHeatmap() {
+  state.heatmapVisible = !state.heatmapVisible;
+  const btn = document.getElementById('btn-heatmap');
+  if (state.heatmapVisible && heatLayer) {
+    heatLayer.addTo(map);
+    btn.style.color = 'var(--orange)';
+  } else if (heatLayer) {
+    map.removeLayer(heatLayer);
+    btn.style.color = '';
+  }
+}
+
+// ─── Alerts ───────────────────────────────────────────────────────────────────
+async function loadAlerts(lat, lon) {
+  try {
+    const r = await fetch(`/api/alerts?lat=${lat}&lon=${lon}`);
+    const data = await r.json();
+    const alerts = data.alerts || [];
+    const bodyEl = document.getElementById('alerts-body');
+    const notifDot = document.getElementById('notif-dot');
+
+    if (alerts.length) {
+      if (notifDot) notifDot.classList.remove('d-none');
+      bodyEl.innerHTML = alerts.map(a => `
+        <div class="ah-item">
+          <div class="ah-title">${escHtml(a.title||a.event_title||'Alert')}</div>
+          <div class="ah-msg">${escHtml(a.location_name||a.description||'')} · Sev ${Math.round((a.severity||0)*100)}%</div>
+          <div class="ah-time">${a.timestamp ? timeAgo(a.timestamp) : ''}</div>
+        </div>`).join('');
+    } else {
+      if (notifDot) notifDot.classList.add('d-none');
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function subscribeAlerts() {
+  const email = document.getElementById('sub-email').value.trim();
+  const phone = document.getElementById('sub-phone').value.trim();
+  const radius = document.getElementById('radius-range').value;
+
+  if (state.userLoc) {
+    await fetch('/api/set_location', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state.userLoc),
+    });
+  }
+  const r = await fetch('/api/subscribe_alerts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, phone, radius_km: parseInt(radius) }),
+  });
+  const data = await r.json();
+  if (data.ok) {
+    alert('Subscribed! You will receive alerts for events within ' + radius + ' km.');
+  }
+}
+
+// ─── I'm Safe ─────────────────────────────────────────────────────────────────
+function openSafeModal() {
+  new bootstrap.Modal(document.getElementById('safe-modal')).show();
+}
+
+async function submitSafe() {
+  const alias = document.getElementById('safe-name').value.trim() || 'Someone';
+  const message = document.getElementById('safe-msg').value.trim() || "I'm safe";
+  const city = document.getElementById('safe-city').value.trim();
+
+  const body = { alias, message, city };
+  if (state.userLoc) { body.lat = state.userLoc.lat; body.lon = state.userLoc.lon; }
+
+  const r = await fetch('/api/safe_report', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await r.json();
+
+  bootstrap.Modal.getInstance(document.getElementById('safe-modal')).hide();
+
+  const fullUrl = window.location.origin + data.url;
+  document.getElementById('safe-url').value = fullUrl;
+  new bootstrap.Modal(document.getElementById('safe-link-modal')).show();
+}
+
+function copyLink() {
+  const inp = document.getElementById('safe-url');
+  inp.select();
+  document.execCommand('copy');
+  alert('Link copied!');
+}
+
+// ─── Resources accordion ─────────────────────────────────────────────────────
+function toggleRes(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// ─── PDF export ──────────────────────────────────────────────────────────────
+function exportPDF() {
+  if (!window.jspdf) { alert('PDF library not loaded.'); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text('WARSCAN Evacuation Plan', 20, 20);
+  doc.setFontSize(11);
+  let y = 35;
+
+  if (state.userLoc) {
+    doc.text(`Origin: ${state.userLoc.lat.toFixed(4)}, ${state.userLoc.lon.toFixed(4)}`, 20, y); y += 8;
+  }
+  if (state.destLoc) {
+    doc.text(`Destination: ${document.getElementById('dest-input').value}`, 20, y); y += 8;
+  }
+
+  const distEl = document.getElementById('r-dist');
+  if (distEl) {
+    doc.text(`Distance: ${distEl.textContent} km`, 20, y); y += 8;
+    const timeEl = document.getElementById('r-time');
+    doc.text(`Est. Time: ${timeEl.textContent} min`, 20, y); y += 12;
+  }
+
+  const steps = document.querySelectorAll('.step-row .step-txt');
+  if (steps.length) {
+    doc.setFontSize(12);
+    doc.text('Steps:', 20, y); y += 8;
+    doc.setFontSize(10);
+    steps.forEach((s, i) => {
+      const lines = doc.splitTextToSize(`${i+1}. ${s.textContent.trim()}`, 170);
+      doc.text(lines, 20, y);
+      y += lines.length * 6 + 2;
+      if (y > 270) { doc.addPage(); y = 20; }
+    });
+  }
+
+  doc.text('Generated by WARSCAN — ' + new Date().toLocaleString(), 20, 285);
+  doc.save('evacuation-plan.pdf');
+}
+
+// ─── SocketIO real-time ───────────────────────────────────────────────────────
+{% if config and config.SOCKETIO_ENABLED is not defined or true %}
+(function() {
+  if (typeof io === 'undefined') return;
+  const socket = io();
+  socket.on('new_events', d => {
+    if (d.count > 0) loadEvents(state.filter);
+  });
+  socket.on('threat_level_update', d => {
+    const bar = document.querySelector('.threat-bar');
+    if (bar) {
+      bar.className = 'threat-bar ' + (d.level||'unknown').toLowerCase();
+    }
+  });
+})();
+{% endif %}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function timeAgo(ts) {
+  const diff = (Date.now() - new Date(ts).getTime()) / 1000;
+  if (diff < 60) return `${Math.floor(diff)}s ago`;
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  return `${Math.floor(diff/86400)}d ago`;
+}
+
+// ─── Onboarding ───────────────────────────────────────────────────────────────
+function showOnboard() {
+  document.getElementById('onboard').style.display = 'flex';
+}
+
+function closeOnboard() {
+  document.getElementById('onboard').style.display = 'none';
+  if (document.getElementById('ob-dont-show').checked) {
+    localStorage.setItem('warscan_onboard_done', '1');
+  }
+}
+
+// ─── Boot ─────────────────────────────────────────────────────────────────────
+loadEvents('all');
+setInterval(() => loadEvents(state.filter), 60000);
+
+// Show onboarding on first visit
+if (!localStorage.getItem('warscan_onboard_done')) {
+  setTimeout(showOnboard, 600);
+}
+</script>
+{% endblock %}

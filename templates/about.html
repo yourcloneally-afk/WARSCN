@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}About — WARSCAN{% endblock %}
+
+{% block content %}
+<div class="page-wrap">
+  {% if error %}
+  <div class="card" style="background:rgba(248,81,73,.08);border-color:rgba(248,81,73,.3);margin-bottom:24px">
+    <div style="color:var(--red);font-weight:500">{{ error }}</div>
+  </div>
+  {% endif %}
+
+  <h1 class="page-h1">About WARSCAN</h1>
+  <p class="page-sub">Real-time conflict intelligence and evacuation assistance</p>
+
+  <div class="section">
+    <h2 class="page-h2"><i class="bi bi-info-circle"></i> What is WARSCAN?</h2>
+    <div class="card">
+      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0">
+        WARSCAN is an open-source OSINT dashboard that helps civilians in conflict zones stay informed and safe.
+        It aggregates data from multiple verified news and humanitarian sources, cross-references reports to
+        determine reliability, and provides actionable evacuation routing.
+      </p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="page-h2"><i class="bi bi-database"></i> Data Sources</h2>
+    <div class="grid-2">
+      {% for src in sources %}
+      <div class="card" style="display:flex;align-items:center;gap:10px">
+        <i class="bi bi-check-circle-fill" style="color:var(--green);flex-shrink:0"></i>
+        <span style="font-size:13px">{{ src }}</span>
+      </div>
+      {% else %}
+      <div class="card">
+        <div style="font-weight:500;margin-bottom:3px">GDELT Project</div>
+        <div style="font-size:12px;color:var(--text3)">Global news monitoring</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:500;margin-bottom:3px">ReliefWeb</div>
+        <div style="font-size:12px;color:var(--text3)">UN OCHA humanitarian reports</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:500;margin-bottom:3px">Google News RSS</div>
+        <div style="font-size:12px;color:var(--text3)">Real-time news aggregation</div>
+      </div>
+      <div class="card">
+        <div style="font-weight:500;margin-bottom:3px">Pikud HaOref</div>
+        <div style="font-size:12px;color:var(--text3)">Israel Home Front Command</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="page-h2"><i class="bi bi-shield-check"></i> Event Verification</h2>
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="ev-badge confirmed" style="flex-shrink:0">Confirmed</span>
+          <span style="font-size:13px;color:var(--text2)">3+ independent sources corroborate the event</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="ev-badge developing" style="flex-shrink:0">Developing</span>
+          <span style="font-size:13px;color:var(--text2)">2 sources, awaiting further confirmation</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="ev-badge rumored" style="flex-shrink:0">Rumored</span>
+          <span style="font-size:13px;color:var(--text2)">Single source, unverified report</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="page-h2"><i class="bi bi-lock"></i> Privacy</h2>
+    <div class="card">
+      <p style="font-size:14px;color:var(--text2);line-height:1.7;margin:0">
+        Your location data is never persistently stored. Geolocation is requested only when you click
+        "Detect My Location" and is used solely for proximity alerts and route calculation.
+        "I'm Safe" reports are anonymous, token-based, and automatically expire after 24 hours.
+      </p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="page-h2"><i class="bi bi-exclamation-triangle"></i> Limitations &amp; Disclaimer</h2>
+    <div class="card" style="border-color:rgba(210,153,34,.3)">
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);line-height:1.9">
+        <li>Data may be delayed, incomplete, or inaccurate</li>
+        <li>Evacuation routes are suggestions, not guarantees of safety</li>
+        <li>Always follow official government and military guidance</li>
+        <li>This tool supplements but does not replace official emergency services</li>
+        <li>Not liable for decisions made based on this information</li>
+      </ul>
+    </div>
+  </div>
+
+  <a href="/" class="btn btn-ghost" style="text-decoration:none">
+    <i class="bi bi-arrow-left"></i> Back to Dashboard
+  </a>
+</div>
+{% endblock %}
