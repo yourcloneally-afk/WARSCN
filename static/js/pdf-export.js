@@ -1,5 +1,5 @@
 /**
- * WARSCAN - PDF Export Controller
+ * EvacScan - PDF Export Controller
  */
 
 const PdfExport = {
@@ -22,7 +22,7 @@ const PdfExport = {
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(24);
         doc.setFont('helvetica', 'bold');
-        doc.text('WARSCAN', margin, 25);
+        doc.text('EvacScan', margin, 25);
         
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
@@ -139,6 +139,6 @@ const PdfExport = {
         doc.text('This document is for informational purposes only. Always follow official guidance.', margin, y);
 
         // Save
-        doc.save(`warscan-evacuation-${Date.now()}.pdf`);
+        doc.save(`evacscan-evacuation-${Date.now()}.pdf`);
     }
 };

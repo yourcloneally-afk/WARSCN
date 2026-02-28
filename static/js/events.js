@@ -1,5 +1,5 @@
 /**
- * WARSCAN - Event Feed Controller
+ * EvacScan - Event Feed Controller
  */
 
 const EventFeed = {
@@ -97,8 +97,8 @@ const EventFeed = {
     },
 
     showOnMap(lat, lon) {
-        if (lat && lon && typeof WarscanMap !== 'undefined') {
-            WarscanMap.flyTo(lat, lon, 10);
+        if (lat && lon && typeof EvacScanMap !== 'undefined') {
+            EvacScanMap.flyTo(lat, lon, 10);
         }
     },
 

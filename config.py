@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # --- Flask ---
-SECRET_KEY = os.getenv("SECRET_KEY", "warscan-dev-key-change-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY", "evacscan-dev-key-change-in-production")
 DEBUG = os.getenv("FLASK_DEBUG", "0") == "1"
 
 # --- Database ---
@@ -21,7 +21,7 @@ DANGER_BUFFER_KM = int(os.getenv("DANGER_BUFFER_KM", "20"))
 # --- Free-tier API sources (no key needed) ---
 GDELT_API_URL = "https://api.gdeltproject.org/api/v2/doc/doc"
 RELIEFWEB_API_URL = "https://api.reliefweb.int/v1/reports"
-RELIEFWEB_APPNAME = os.getenv("RELIEFWEB_APPNAME", "warscan")  # Must be pre-approved at https://apidoc.reliefweb.int
+RELIEFWEB_APPNAME = os.getenv("RELIEFWEB_APPNAME", "evacscan")  # Must be pre-approved at https://apidoc.reliefweb.int
 GOOGLE_NEWS_RSS_URL = "https://news.google.com/rss/search"
 
 # --- Optional paid sources (auto-detected) ---
@@ -70,4 +70,4 @@ FOCUS_COUNTRY_CODES = ["IRN", "ISR", "USA"]
 GDELT_CAMEO_CODES = ["18", "19", "20"]  # Military action root codes
 
 # --- Geocoding ---
-GEOCODER_USER_AGENT = "warscan-conflict-monitor/1.0"
+GEOCODER_USER_AGENT = "evacscan-conflict-monitor/1.0"

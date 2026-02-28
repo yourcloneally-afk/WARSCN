@@ -1,10 +1,10 @@
 /**
- * WARSCAN Service Worker
+ * EvacScan Service Worker
  * Caching strategies: app shell (cache-first), API (stale-while-revalidate),
  * map tiles (cache-first for saved, network-first for others)
  */
 
-const CACHE_NAME = 'warscan-v1';
+const CACHE_NAME = 'evacscan-v1';
 const APP_SHELL = [
     '/',
     '/emergency',

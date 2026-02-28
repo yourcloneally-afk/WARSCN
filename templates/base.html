@@ -4,9 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0d1117">
-  <title>{% block title %}WARSCAN{% endblock %}</title>
+  <title>{% block title %}EvacScan{% endblock %}</title>
   <link rel="manifest" href="/static/manifest.json">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+  <link rel="icon" type="image/png" href="/static/icons/favicon-32.png">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,8 +22,9 @@
 <!-- ── Header ──────────────────────────────────────────────────────────────── -->
 <header class="header">
   <a href="/" class="header-logo">
+    <img src="/static/icons/logo.png" alt="EvacScan" class="header-logo-img">
     <div class="live-dot"></div>
-    WARSCAN
+    EvacScan
     <span class="logo-badge">LIVE</span>
   </a>
 
@@ -41,6 +43,13 @@
   </div>
 
   <div class="header-spacer"></div>
+
+  <!-- X / Community link -->
+  <a href="https://x.com/i/communities/2011460319936500137" target="_blank" rel="noopener"
+     class="header-btn header-x-btn" title="Join EvacScan on X (Community)">
+    <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    Community
+  </a>
 
   <a href="/emergency" class="header-btn" title="Emergency Resources"><i class="bi bi-shield-plus"></i></a>
   <a href="/about" class="header-btn" title="About"><i class="bi bi-info-circle"></i></a>

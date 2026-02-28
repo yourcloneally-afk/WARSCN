@@ -1,5 +1,5 @@
 /**
- * WARSCAN - Global Application Controller
+ * EvacScan - Global Application Controller
  */
 
 const App = {
@@ -24,12 +24,12 @@ const App = {
             });
 
             this.socket.on('connect', () => {
-                console.log('[WARSCAN] Connected to server');
+                console.log('[EvacScan] Connected to server');
                 this.updateConnectionStatus(true);
             });
 
             this.socket.on('disconnect', () => {
-                console.log('[WARSCAN] Disconnected');
+                console.log('[EvacScan] Disconnected');
                 this.updateConnectionStatus(false);
             });
 
@@ -37,8 +37,8 @@ const App = {
                 if (typeof EventFeed !== 'undefined') {
                     EventFeed.handleNewEvents(data.events);
                 }
-                if (typeof WarscanMap !== 'undefined') {
-                    WarscanMap.updateEvents(data.events);
+                if (typeof EvacScanMap !== 'undefined') {
+                    EvacScanMap.updateEvents(data.events);
                 }
             });
 
@@ -52,7 +52,7 @@ const App = {
                 }
             });
         } catch (e) {
-            console.warn('[WARSCAN] Socket init failed:', e);
+            console.warn('[EvacScan] Socket init failed:', e);
         }
     },
 
@@ -120,8 +120,8 @@ const App = {
             btn.classList.toggle('active', enabled);
         }
 
-        if (typeof WarscanMap !== 'undefined') {
-            WarscanMap.setBatteryMode(enabled);
+        if (typeof EvacScanMap !== 'undefined') {
+            EvacScanMap.setBatteryMode(enabled);
         }
     },
 
@@ -143,7 +143,7 @@ const App = {
                 body: body,
                 icon: '/static/icons/icon-192.png',
                 badge: '/static/icons/icon-192.png',
-                tag: 'warscan-alert',
+                tag: 'evacscan-alert',
                 renotify: true
             });
         }
@@ -217,7 +217,7 @@ function shareSafeLink() {
     const link = document.getElementById('safe-link').value;
     if (navigator.share) {
         navigator.share({
-            title: "I'm Safe - WARSCAN",
+            title: "I'm Safe - EvacScan",
             text: "I wanted to let you know I'm safe.",
             url: link
         });

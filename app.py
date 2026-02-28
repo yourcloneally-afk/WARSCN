@@ -1,4 +1,4 @@
-"""WARSCAN -- Real-Time Conflict Monitor & Evacuation Tool.
+"""EvacScan -- Real-Time Conflict Monitor & Evacuation Tool.
 
 Flask-SocketIO application with APScheduler background data refresh.
 """

@@ -162,7 +162,7 @@ def process_subscriptions(socketio=None):
         # Email
         email = sub.get("email")
         if email:
-            send_email(email, "WARSCAN Alert", msg)
+            send_email(email, "EvacScan Alert", msg)
 
         # Update last notified
         models.upsert_session(

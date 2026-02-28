@@ -1,6 +1,6 @@
 {
-    "name": "WARSCAN",
-    "short_name": "WARSCAN",
+    "name": "EvacScan",
+    "short_name": "EvacScan",
     "description": "Real-time conflict monitoring and evacuation assistance",
     "start_url": "/",
     "display": "standalone",

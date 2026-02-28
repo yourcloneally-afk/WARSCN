@@ -1,5 +1,5 @@
 /**
- * WARSCAN - Alerts Controller
+ * EvacScan - Alerts Controller
  */
 
 const Alerts = {
@@ -19,7 +19,7 @@ const Alerts = {
 
         // Show browser notification
         App.requestNotificationPermission();
-        App.showNotification(alert.title || 'WARSCAN Alert', alert.message || 'New threat detected nearby');
+        App.showNotification(alert.title || 'EvacScan Alert', alert.message || 'New threat detected nearby');
 
         // Show modal
         this.showModal(alert);

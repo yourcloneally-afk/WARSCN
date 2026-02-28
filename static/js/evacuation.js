@@ -1,5 +1,5 @@
 /**
- * WARSCAN - Evacuation Controller
+ * EvacScan - Evacuation Controller
  */
 
 const Evacuation = {
@@ -28,9 +28,9 @@ const Evacuation = {
                 statusEl.innerHTML = `<i class="bi bi-check-circle" style="color: var(--ws-success);"></i> ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
                 
                 // Center map and load safe zones
-                if (typeof WarscanMap !== 'undefined') {
-                    WarscanMap.flyTo(lat, lon, 10);
-                    WarscanMap.loadSafeZones(lat, lon);
+                if (typeof EvacScanMap !== 'undefined') {
+                    EvacScanMap.flyTo(lat, lon, 10);
+                    EvacScanMap.loadSafeZones(lat, lon);
                 }
             },
             (err) => {
@@ -42,12 +42,12 @@ const Evacuation = {
     },
 
     pickFromMap() {
-        if (typeof WarscanMap !== 'undefined') {
+        if (typeof EvacScanMap !== 'undefined') {
             const input = document.getElementById('dest-input');
             input.placeholder = 'Click on the map...';
             input.value = '';
             
-            WarscanMap.enableDestinationPick((lat, lon) => {
+            EvacScanMap.enableDestinationPick((lat, lon) => {
                 this.destination = { lat, lon };
                 input.value = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
                 input.placeholder = 'Click map or enter coords';
@@ -141,8 +141,8 @@ const Evacuation = {
         }
 
         // Show on map
-        if (typeof WarscanMap !== 'undefined' && data.geometry) {
-            WarscanMap.showRoute(data);
+        if (typeof EvacScanMap !== 'undefined' && data.geometry) {
+            EvacScanMap.showRoute(data);
         }
     }
 };

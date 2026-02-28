@@ -1,4 +1,4 @@
-/* WARSCAN — OSINT Dashboard
+/* EvacScan — OSINT Dashboard
    Inspired by iranmonitor.org / SignalCockpit
    Dark, data-dense, professional */
 
@@ -58,6 +58,35 @@ html, body {
   text-decoration: none;
   letter-spacing: -.3px;
   flex-shrink: 0;
+}
+
+.header-logo-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+/* X community button in header */
+.header-x-btn {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px !important;
+  font-weight: 600;
+  padding: 0 10px !important;
+  width: auto !important;
+  color: var(--text2) !important;
+  border: 1px solid var(--bg3) !important;
+  background: var(--bg2) !important;
+  transition: background .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.header-x-btn:hover {
+  background: rgba(29,155,240,.12) !important;
+  border-color: #1d9bf0 !important;
+  color: #1d9bf0 !important;
 }
 
 .logo-badge {
@@ -1167,6 +1196,49 @@ input[type="range"]::-webkit-slider-thumb {
   max-width: 640px;
   position: relative;
   z-index: 2;
+}
+
+/* Logo on landing hero */
+.hero-logo-wrap {
+  margin-bottom: 20px;
+}
+.hero-logo-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 16px;
+  background: var(--bg2);
+  padding: 10px;
+  border: var(--border);
+}
+
+.hero-tagline {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text2);
+  margin-top: -12px;
+  margin-bottom: 16px;
+  letter-spacing: -.2px;
+}
+
+/* X / Twitter button */
+.btn-x {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--bg2);
+  color: var(--text);
+  border: var(--border);
+  border-radius: var(--r);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+  text-decoration: none;
+}
+.btn-x:hover {
+  background: rgba(29,155,240,.12);
+  border-color: #1d9bf0;
+  color: #1d9bf0;
 }
 
 .hero-badge {

@@ -2,10 +2,10 @@
 
 TRANSLATIONS = {
     "app_name": {
-        "en": "WARSCAN",
-        "he": "WARSCAN",
-        "fa": "WARSCAN",
-        "ar": "WARSCAN",
+        "en": "EvacScan",
+        "he": "EvacScan",
+        "fa": "EvacScan",
+        "ar": "EvacScan",
     },
     "tagline": {
         "en": "Real-Time Conflict Monitor & Evacuation Tool",
@@ -144,10 +144,10 @@ TRANSLATIONS = {
         "ar": "قد تكون البيانات قديمة. راجع المصادر الرسمية.",
     },
     "disclaimer": {
-        "en": "WARSCAN aggregates publicly available data. Always verify with official emergency services. This is not a substitute for professional guidance.",
-        "he": "WARSCAN מאגד נתונים ציבוריים. תמיד אמתו עם שירותי החירום הרשמיים. כלי זה אינו תחליף להנחיות מקצועיות.",
-        "fa": "WARSCAN داده‌های عمومی را جمع‌آوری می‌کند. همیشه با خدمات اضطراری رسمی تأیید کنید. این جایگزین راهنمایی حرفه‌ای نیست.",
-        "ar": "WARSCAN يجمع البيانات المتاحة للعامة. تحقق دائماً من خدمات الطوارئ الرسمية. هذه الأداة ليست بديلاً عن الإرشاد المهني.",
+        "en": "EvacScan aggregates publicly available data. Always verify with official emergency services. This is not a substitute for professional guidance.",
+        "he": "EvacScan מאגד נתונים ציבוריים. תמיד אמתו עם שירותי החירום הרשמיים. כלי זה אינו תחליף להנחיות מקצועיות.",
+        "fa": "EvacScan داده‌های عمومی را جمع‌آوری می‌کند. همیشه با خدمات اضطراری رسمی تأیید کنید. این جایگزین راهنمایی حرفه‌ای نیست.",
+        "ar": "EvacScan يجمع البيانات المتاحة للعامة. تحقق دائماً من خدمات الطوارئ الرسمية. هذه الأداة ليست بديلاً عن الإرشاد المهني.",
     },
     "no_events": {
         "en": "No events found for the current filters.",

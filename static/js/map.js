@@ -1,8 +1,8 @@
 /**
- * WARSCAN - Map Controller
+ * EvacScan - Map Controller
  */
 
-const WarscanMap = {
+const EvacScanMap = {
     map: null,
     layers: {
         events: null,
@@ -199,7 +199,7 @@ const WarscanMap = {
         }
 
         container.innerHTML = zones.slice(0, 5).map(zone => `
-            <div class="safe-zone-item" onclick="WarscanMap.flyTo(${zone.lat}, ${zone.lon}, 14)">
+            <div class="safe-zone-item" onclick="EvacScanMap.flyTo(${zone.lat}, ${zone.lon}, 14)">
                 <div class="safe-zone-icon">
                     <i class="bi bi-${zone.type === 'hospital' ? 'hospital' : zone.type === 'shelter' ? 'house' : 'geo-alt'}" style="color: var(--ws-success);"></i>
                 </div>

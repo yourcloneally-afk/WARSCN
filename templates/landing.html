@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}WARSCAN — Real-Time Conflict Intelligence{% endblock %}
+{% block title %}EvacScan — Real-Time Conflict Intelligence{% endblock %}
 
 {% block content %}
 <div class="landing">
@@ -7,19 +7,27 @@
   <!-- ── Hero ──────────────────────────────────────────── -->
   <section class="hero">
     <div class="hero-inner">
+      <div class="hero-logo-wrap">
+        <img src="/static/icons/logo.png" alt="EvacScan" class="hero-logo-img">
+      </div>
       <div class="hero-badge">
         <span class="live-dot"></span>
         LIVE DATA · {{ threat_level }} THREAT LEVEL
       </div>
-      <h1 class="hero-title">Real-Time Conflict<br>Intelligence</h1>
+      <h1 class="hero-title">EvacScan</h1>
+      <p class="hero-tagline">Real-Time Conflict Intelligence</p>
       <p class="hero-sub">
-        WARSCAN monitors the Iran–Israel–US conflict in real time — aggregating
-        news from 15+ sources, mapping events, and providing evacuation routing
+        EvacScan monitors the Iran–Israel–US conflict in real time — aggregating
+        news from 30+ sources, mapping events, and providing evacuation routing
         for people on the ground.
       </p>
       <div class="hero-cta">
         <a href="/dashboard" class="btn btn-red hero-btn">
           <i class="bi bi-map-fill"></i> Open Live Dashboard
+        </a>
+        <a href="https://x.com/i/communities/2011460319936500137" target="_blank" rel="noopener" class="btn btn-x hero-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px;flex-shrink:0"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Join Community on X
         </a>
         <a href="#how" class="btn btn-ghost hero-btn">
           <i class="bi bi-info-circle"></i> How it works
@@ -105,7 +113,7 @@
           <div class="feat-ico orange"><i class="bi bi-signpost-split-fill"></i></div>
           <h3 class="feat-title">Evacuation Routing</h3>
           <p class="feat-desc">
-            Enter your destination and WARSCAN calculates a route, shows distance
+            Enter your destination and EvacScan calculates a route, shows distance
             and estimated travel time, and draws it on the map. Routes avoid
             high-severity danger zones where possible.
           </p>
@@ -120,7 +128,7 @@
           <div class="feat-ico green"><i class="bi bi-bell-fill"></i></div>
           <h3 class="feat-title">Proximity Alerts</h3>
           <p class="feat-desc">
-            Set your location and alert radius. WARSCAN will show you events
+            Set your location and alert radius. EvacScan will show you events
             within that range. Optionally provide email or phone for
             out-of-browser notifications.
           </p>
@@ -264,7 +272,7 @@
         <i class="bi bi-exclamation-triangle disclaimer-ico"></i>
         <div>
           <strong>Important disclaimer</strong><br>
-          WARSCAN aggregates public news sources and open data. Information may be delayed,
+          EvacScan aggregates public news sources and open data. Information may be delayed,
           incomplete, or inaccurate. This tool supplements but does not replace official
           government guidance, military advisories, or emergency services. Always follow
           instructions from local authorities.
@@ -278,13 +286,20 @@
     <div class="section-inner narrow center">
       <h2 class="cta-title">Stay informed. Stay safe.</h2>
       <p class="cta-sub">The dashboard updates every 2 minutes with the latest conflict intelligence.</p>
-      <a href="/dashboard" class="btn btn-red hero-btn" style="font-size:15px;height:48px;padding:0 28px">
-        <i class="bi bi-map-fill"></i> Open Live Dashboard
-      </a>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center">
+        <a href="/dashboard" class="btn btn-red hero-btn" style="font-size:15px;height:48px;padding:0 28px">
+          <i class="bi bi-map-fill"></i> Open Live Dashboard
+        </a>
+        <a href="https://x.com/i/communities/2011460319936500137" target="_blank" rel="noopener"
+           class="btn btn-x hero-btn" style="height:48px;padding:0 22px;font-size:14px">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;flex-shrink:0"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Join Community on X
+        </a>
+      </div>
       <div class="cta-links">
         <a href="/emergency" class="page-link">Emergency Resources</a>
         <span style="color:var(--text3)">·</span>
-        <a href="/about" class="page-link">About WARSCAN</a>
+        <a href="/about" class="page-link">About EvacScan</a>
       </div>
     </div>
   </section>
